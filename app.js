@@ -205,7 +205,7 @@ function sendImageMessage(recipientId, firstimage) {
       }
     }
   };
-  callSendAPI(messageData);
+  callUploadAPI(messageData);
 }
 
 function sendTextMessage(recipientId, messageText) {
