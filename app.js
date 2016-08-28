@@ -7,6 +7,7 @@ const
   express = require('express'),
   https = require('https'),
   request = require('request'),
+  jimp = require('jimp'),
   fs = require('fs');
 
 var app = express();
@@ -132,10 +133,6 @@ function receivedMessage(event) {
   if (messageText) {
     console.log('보낸 메세지 : ' + messageText);
 
-    // fs.createReadStream('image/1.jpg').pipe(fs.createWriteStream('./tmp/1.jpg'));
-
-    uploadImageMessage(senderID,'image/1.jpg');
-
     // 서버로 보내는 부분 추가.
     var options = {
       uri: 'http://mojitok.ap-northeast-2.elasticbeanstalk.com/recommend',
@@ -145,12 +142,19 @@ function receivedMessage(event) {
       }
     };
 
-    // request(options, function (error, response, body) {
-    //   if (!error && response.statusCode == 200) {
-    //     var first = body.EMOTICONS[0];
-    //     sendImageMessage(senderID, first);
-    //   }
-    // });
+    request(options, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var first = "https://s3.ap-northeast-2.amazonaws.com/mojitok-bucket/" + body.EMOTICONS[0];
+        jimp.read(first, function (err, image) {
+          jimp.loadFont(jimp.FONT_SANS_32_BLACK).then(function (font) {
+            image.print(font, 10, 10, messageText);
+            let filename = body.EMOTICONS[0]+'11'+image.getExtension(); 
+            image.write(filename);
+            uploadImageMessage(senderID,filename);
+          });
+        }); 
+      }
+    });
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
