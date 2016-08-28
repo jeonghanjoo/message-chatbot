@@ -144,6 +144,7 @@ request(options, function (error, response, body) {
   if (!error && response.statusCode == 200) {
     var first = body.EMOTICONS[0];
       sendImageMessage(senderID, first);
+      sendTextMessage(senderID,"ok");
   }
 });
     } else if (messageAttachments) {
@@ -183,6 +184,10 @@ function receivedPostback(event) {
   var senderID = event.sender.id;
     sendTextMessage(senderID, "안녕하세요!!\n 저는 페이스북 봇입니다");
  }
+
+
+
+
 /*
  * Send a message with an using the Send API.
  *
