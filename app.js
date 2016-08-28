@@ -153,11 +153,23 @@ function receivedMessage(event) {
         console.log("loadFont : jimp");
         image.print(font, 10, 10, messageText);
         let filename = "tmp.jpg";
-        image.write(filename);
-
-        console.log("printing : jimp");
-        uploadImageMessage(senderID, filename);
-
+        var cb = function(){
+          console.log("printing : jimp");
+          uploadImageMessage(senderID, filename);
+        };
+        image.getBuffer(mime, function (err, buffer) {
+          if (err) return throwError.call(that, err, cb);
+          var stream = FS.createWriteStream(path);
+          stream.on("open", function (fh) {
+            stream.write(buffer);
+            stream.end();
+          }).on("error", function (err) {
+            return throwError.call(that, err, cb);
+          });
+          stream.on("finish", function (fh) {
+            return cb.call(that, null, that);
+          });
+        });
       });
     }); 
 
