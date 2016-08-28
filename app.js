@@ -253,8 +253,8 @@ console.log(parameter);
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
     form : {
-      recipient : {id : messageData.recipient.id},
-      message: {attachment : {type : "image", payload : {}}},
+      recipient : {"id": messageData.recipient.id},
+      message: {"attachment": {"type" : "image", "payload" : {}}},
       filedata: "./tmp/1.jpg"
     }
   }, function (error, response, body) {
