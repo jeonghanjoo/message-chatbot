@@ -247,7 +247,7 @@ function callUploadAPI(messageData) {
     }
   };
 
-consol.log(parameter);
+console.log(parameter);
 
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
