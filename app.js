@@ -219,8 +219,8 @@ function uploadImageMessage(recipientId, imagePath) {
     qs: { access_token: PAGE_ACCESS_TOKEN },
     method : "POST",
     formData : {
-      recipient : {"id": recipientId},
-      message: {"attachment": {"type" : "image", "payload" : {}}},
+      recipient : JSON.stringify({"id": recipientId}),
+      message: JSON.stringify({"attachment": {"type" : "image", "payload" : {}}}),
       filedata: fs.createReadStream(imagePath)
     }
   }, function (error, response, body) {
