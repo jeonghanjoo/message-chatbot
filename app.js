@@ -132,9 +132,9 @@ function receivedMessage(event) {
   if (messageText) {
     console.log('보낸 메세지 : ' + messageText);
 
-    fs.createReadStream('image/1.jpg').pipe(fs.createWriteStream('./tmp/1.jpg'));
+    // fs.createReadStream('image/1.jpg').pipe(fs.createWriteStream('./tmp/1.jpg'));
 
-    uploadImageMessage(senderID,'./tmp/1.jpg');
+    uploadImageMessage(senderID,'image/1.jpg');
 
     // 서버로 보내는 부분 추가.
     var options = {
