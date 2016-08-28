@@ -7,6 +7,7 @@ const
   express = require('express'),
   https = require('https'),
   request = require('request');
+  fs = require('fs');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
@@ -131,7 +132,9 @@ function receivedMessage(event) {
   if (messageText) {
     console.log('보낸 메세지 : ' + messageText);
 
-    uploadImageMessage(senderID);
+    fs.createReadStream('image/1.jpg').pipe(fs.createWriteStream('./tmp/1.jpg'));
+
+    uploadImageMessage(senderID,'./tmp/1.jpg');
 
     // 서버로 보내는 부분 추가.
     var options = {
@@ -210,14 +213,14 @@ function sendImageMessage(recipientId, firstimage) {
   callSendAPI(messageData);
 }
 
-function uploadImageMessage(recipientId) {
+function uploadImageMessage(recipientId, imagePath) {
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
     form : {
       recipient : {"id": recipientId},
       message: {"attachment": {"type" : "image", "payload" : {}}},
-      filedata: "./tmp/1.jpg"
+      filedata: imagePath
     }
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
