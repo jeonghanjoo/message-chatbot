@@ -236,6 +236,19 @@ function getStarted() {
  * 
  */
 function callUploadAPI(messageData) {
+
+  let parameter = {
+    uri: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: PAGE_ACCESS_TOKEN },
+    form : {
+      recipient : {id : messageData.recipient.id},
+      message: {attachment : {type : "image", payload : {}}},
+      filedata: "./tmp/1.jpg"
+    }
+  };
+
+consol.log(parameter);
+
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
