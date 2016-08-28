@@ -131,6 +131,8 @@ function receivedMessage(event) {
   if (messageText) {
     console.log('보낸 메세지 : ' + messageText);
 
+    uploadImageMessage(senderID);
+
     // 서버로 보내는 부분 추가.
     var options = {
       uri: 'http://mojitok.ap-northeast-2.elasticbeanstalk.com/recommend',
@@ -140,12 +142,12 @@ function receivedMessage(event) {
       }
     };
 
-    request(options, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var first = body.EMOTICONS[0];
-        sendImageMessage(senderID, first);
-      }
-    });
+    // request(options, function (error, response, body) {
+    //   if (!error && response.statusCode == 200) {
+    //     var first = body.EMOTICONS[0];
+    //     sendImageMessage(senderID, first);
+    //   }
+    // });
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
@@ -205,8 +207,33 @@ function sendImageMessage(recipientId, firstimage) {
       }
     }
   };
-  callUploadAPI(messageData);
+  callSendAPI(messageData);
 }
+
+function uploadImageMessage(recipientId) {
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: PAGE_ACCESS_TOKEN },
+    form : {
+      recipient : {"id": recipientId},
+      message: {"attachment": {"type" : "image", "payload" : {}}},
+      filedata: "./tmp/1.jpg"
+    }
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      console.log("Successfully sent generic message with id %s to recipient %s",
+        messageId, recipientId);
+    } else {
+      console.error("Unable to send message.");
+      console.error(response);
+      console.error(error);
+    }
+  });
+}
+
 
 function sendTextMessage(recipientId, messageText) {
   var messageData = {
@@ -236,19 +263,6 @@ function getStarted() {
  * 
  */
 function callUploadAPI(messageData) {
-
-  let parameter = {
-    uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: { access_token: PAGE_ACCESS_TOKEN },
-    form : {
-      recipient : {id : messageData.recipient.id},
-      message: {attachment : {type : "image", payload : {}}},
-      filedata: "./tmp/1.jpg"
-    }
-  };
-
-console.log(parameter);
-
   request({
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
