@@ -142,19 +142,28 @@ function receivedMessage(event) {
       }
     };
 
-    request(options, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var first = "https://s3.ap-northeast-2.amazonaws.com/mojitok-bucket/" + body.EMOTICONS[0];
-        jimp.read('image/1.jpg', function (err, image) {
-          jimp.loadFont(jimp.FONT_SANS_32_BLACK).then(function (font) {
-            image.print(font, 10, 10, messageText);
-            let filename = body.EMOTICONS[0]+'11'+image.getExtension(); 
-            image.write(filename);
-            uploadImageMessage(senderID,filename);
-          });
-        }); 
+    jimp.read('image/1.jpg', function (err, image) {
+      if(err){
+        console.log(err);
       }
-    });
+
+      console.log("processing : jimp");
+
+      jimp.loadFont(jimp.FONT_SANS_32_BLACK).then(function (font) {
+        image.print(font, 10, 10, messageText);
+        image.write(filename);
+        console.log("printing : jimp");
+        uploadImageMessage(senderID, filename);
+      });
+    }); 
+
+
+    // request(options, function (error, response, body) {
+    //   if (!error && response.statusCode == 200) {
+    //     var first = "https://s3.ap-northeast-2.amazonaws.com/mojitok-bucket/" + body.EMOTICONS[0];
+        
+    //   }
+    // });
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
