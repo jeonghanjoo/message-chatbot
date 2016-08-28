@@ -149,11 +149,12 @@ function receivedMessage(event) {
 
       console.log("processing : jimp");
 
-      jimp.loadFont(jimp.FONT_SANS_32_BLACK).then(function (font) {
+      jimp.loadFont(jimp.FONT_SANS_8_BLACK, function (font) {
         image.print(font, 10, 10, messageText);
-        image.write(filename);
-        console.log("printing : jimp");
-        uploadImageMessage(senderID, filename);
+        image.write(filename).then(function(t){
+          console.log("printing : jimp");
+          uploadImageMessage(senderID, filename);
+        });
       });
     }); 
 
