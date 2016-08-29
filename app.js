@@ -155,12 +155,15 @@ function receivedMessage(event) {
         image.print(font, 10, 10, messageText);
         image.getBuffer(mime, function (err, buffer) {
           if(!err) {
+            console.log("getBuffer");
             var bufStream = stream.Readable();
             bufStream._read = function () { };
             bufStream.push(buffer);
             bufStream.push(null);
             bufStream.pause();
             uploadImageMessageWithStream(senderID,bufStream);
+          } else {
+            console.log("getBuffer Failed");
           }
         });
       });
