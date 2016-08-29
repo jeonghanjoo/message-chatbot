@@ -153,19 +153,11 @@ function receivedMessage(event) {
       jimp.loadFont(jimp.FONT_SANS_8_BLACK, function (font) {
         console.log("loadFont : jimp");
         image.print(font, 10, 10, messageText);
-        image.getBuffer(mime, function (err, buffer) {
-          if(!err) {
-            console.log("getBuffer");
-            var bufStream = stream.Readable();
-            bufStream._read = function () { };
-            bufStream.push(buffer);
-            bufStream.push(null);
-            bufStream.pause();
-            uploadImageMessageWithStream(senderID,bufStream);
-          } else {
-            console.log("getBuffer Failed");
-          }
-        });
+        image.write("./tmp/1.jpg", function(err, data){
+          console.assert(err,"write error");
+          console.log(data);
+          uploadImageMessage(senderID,"./tmp/1.jpg");
+        })
       });
     }); 
 
