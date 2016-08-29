@@ -153,6 +153,7 @@ function receivedMessage(event) {
       jimp.loadFont(jimp.FONT_SANS_8_BLACK, function (font) {
         console.log("loadFont : jimp");
         image.print(font, 10, 10, messageText);
+        console.log("print text on image");
         image.write("./tmp/1.jpg", function(err, data){
           console.assert(err,"write error");
           console.log(data);
