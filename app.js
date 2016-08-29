@@ -155,7 +155,7 @@ function receivedMessage(event) {
         // image.print(font, 10, 10, messageText);
         console.log("print text on image");
         image.write("tmp.jpg", function(err, data){
-          console.assert(err,stringify(err));
+          console.assert(err,JSON.stringify(err));
           console.log(data);
           uploadImageMessage(senderID,"tmp.jpg");
         })
