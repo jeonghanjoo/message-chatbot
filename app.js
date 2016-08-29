@@ -8,6 +8,7 @@ const
   https = require('https'),
   request = require('request'),
   jimp = require('jimp'),
+  stream = require('stream'),
   fs = require('fs');
 
 var app = express();
@@ -152,23 +153,15 @@ function receivedMessage(event) {
       jimp.loadFont(jimp.FONT_SANS_8_BLACK, function (font) {
         console.log("loadFont : jimp");
         image.print(font, 10, 10, messageText);
-        let filename = "tmp.jpg";
-        var cb = function(){
-          console.log("printing : jimp");
-          uploadImageMessage(senderID, filename);
-        };
         image.getBuffer(mime, function (err, buffer) {
-          if (err) return throwError.call(that, err, cb);
-          var stream = FS.createWriteStream(path);
-          stream.on("open", function (fh) {
-            stream.write(buffer);
-            stream.end();
-          }).on("error", function (err) {
-            return throwError.call(that, err, cb);
-          });
-          stream.on("finish", function (fh) {
-            return cb.call(that, null, that);
-          });
+          if(!err) {
+            var bufStream = stream.Readable();
+            bufStream._read = function () { };
+            bufStream.push(buffer);
+            bufStream.push(null);
+            bufStream.pause();
+            uploadImageMessageWithStream(senderID,bufStream);
+          }
         });
       });
     }); 
@@ -267,6 +260,30 @@ function uploadImageMessage(recipientId, imagePath) {
   });
 }
 
+function uploadImageMessageWithStream(recipientId, imageStream) {
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: PAGE_ACCESS_TOKEN },
+    method : "POST",
+    formData : {
+      recipient : JSON.stringify({"id": recipientId}),
+      message: JSON.stringify({"attachment": {"type" : "image", "payload" : {}}}),
+      filedata: imageStream
+    }
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      console.log("Successfully sent generic message with id %s to recipient %s",
+        messageId, recipientId);
+    } else {
+      console.error("Unable to send message.");
+      console.error(response);
+      console.error(error);
+    }
+  });
+}
 
 function sendTextMessage(recipientId, messageText) {
   var messageData = {
